@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from 'react'
-import './app.css'
+import './App.css' 
 
 function App() {
 const [ImagenTeacher, setImagenTeacher] =  useState('/Teacher-saludando.png')
