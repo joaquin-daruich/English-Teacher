@@ -37,7 +37,7 @@ function App() {
 
     try {
       // 2. Llamar a Teacher Lily (Groq API - Texto)
-      const resText = await fetch('/.netlify/functions/teacher-chat', {
+      const resText = await fetch('/netlify/functions/teacher-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: inputValue }),
@@ -61,7 +61,7 @@ function App() {
         // GENERAR AUDIO (OPCIONAL - Si falla no bloquea el chat)
         console.log("Intentando generar audio...")
         try {
-          const resAudio = await fetch('/.netlify/functions/generate-audio', {
+          const resAudio = await fetch('/netlify/functions/generate-audio', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ text: dataText.reply }),
