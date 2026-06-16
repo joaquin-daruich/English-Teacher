@@ -6,14 +6,16 @@
     Access-Control-Allow-Headers = "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range"
 
 
+# netlify.toml
 [build]
   command = "npm run build"
-  functions = "netlify/functions"
   publish = "dist"
 
+[functions]
+  directory = "netlify/functions"
+  
 [[plugins]]
   package = "@netlify/plugin-functions-install-core"
-
 
 
 
