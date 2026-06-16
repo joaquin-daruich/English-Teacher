@@ -1,95 +1,62 @@
-const edgeTts = require('edge-tts');
+// netlify/functions/generate-audio.js
+const axios = require('axios');
 
 exports.handler = async (event, context) => {
-  // Log para debugging
-  console.log('[generate-audio] Función iniciada');
-  console.log('[generate-audio] Evento recibido:', event.httpMethod);
-
-  // Validar método
   if (event.httpMethod !== 'POST') {
-    return {
-      statusCode: 405,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-      },
-      body: JSON.stringify({ error: 'Método no permitido' }),
-    };
+    return { statusCode: 405, body: JSON.stringify({ error: 'Método no permitido' }) };
   }
 
   try {
-    // Parsear body
-    const body = JSON.parse(event.body);
-    const text = body.text?.trim();
+    const { text } = JSON.parse(event.body);
 
-    console.log('[generate-audio] Texto recibido:', text?.substring(0, 50));
-
-    if (!text) {
-      return {
-        statusCode: 400,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
-        },
-        body: JSON.stringify({ error: 'No hay texto para sintetizar' }),
-      };
+    if (!text || text.trim() === '') {
+      return { statusCode: 400, body: JSON.stringify({ error: 'No hay texto para generar audio' }) };
     }
 
-    // Generar audio con edge-tts
-    console.log('[generate-audio] Iniciando síntesis de voz...');
+    // Limpiar markdown y limitar a 200 caracteres (límite de Google TTS gratuito)
+    const cleanText = text.replace(/[*\#\[\]]/g, '').trim();
+    const maxLength = 200;
+    const textToSpeak = cleanText.length > maxLength ? cleanText.substring(0, maxLength) : cleanText;
+
+    if (!textToSpeak) {
+      return { statusCode: 400, body: JSON.stringify({ error: 'Texto demasiado corto tras limpieza' }) };
+    }
+
+    const voiceLang = 'es-MX'; // Voz mexicana
     
-    const communicate = new edgeTts.Communicate(text, 'es-MX-DaliaNeural');
-    const audioChunks = [];
+    // URL directa de Google Translate TTS (no requiere API key, gratis para pruebas)
+    const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(textToSpeak)}&tl=${voiceLang}&client=tw-ob`;
 
-    // Recopilar chunks de audio
-    await new Promise((resolve, reject) => {
-      communicate.on('data', (chunk) => {
-        console.log('[generate-audio] Chunk recibido:', chunk.length, 'bytes');
-        audioChunks.push(chunk);
-      });
-
-      communicate.on('end', () => {
-        console.log('[generate-audio] Síntesis completada');
-        resolve();
-      });
-
-      communicate.on('error', (error) => {
-        console.error('[generate-audio] Error en edge-tts:', error);
-        reject(error);
-      });
+    // Descargar audio MP3
+    const response = await axios.get(ttsUrl, { 
+      responseType: 'arraybuffer',
+      timeout: 15000
     });
 
-    // Concatenar chunks en un buffer
-    const audioBuffer = Buffer.concat(audioChunks);
-    console.log('[generate-audio] Buffer total:', audioBuffer.length, 'bytes');
-
-    // Convertir a base64
-    const audioBase64 = audioBuffer.toString('base64');
+    // Convertir buffer a Base64 para enviar al frontend
+    const audioBase64 = Buffer.from(response.data).toString('base64');
 
     return {
       statusCode: 200,
       headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
-        'Cache-Control': 'no-cache',
+        'Cache-Control': 'public, max-age=3600'
       },
-      body: JSON.stringify({ audioBase64 }),
+      body: JSON.stringify({ 
+        audioBase64,
+        textUsed: textToSpeak 
+      }),
     };
 
   } catch (error) {
-    console.error('[generate-audio] Error general:', error.message);
-    console.error('[generate-audio] Stack:', error.stack);
-
-    return {
-      statusCode: 500,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-      },
+    console.error('[Audio Error]', error.message);
+    return { 
+      statusCode: 500, 
       body: JSON.stringify({ 
-        error: `Error de TTS: ${error.message}`,
-        details: error.stack 
-      }),
+        error: 'Fallo al generar audio. Intenta de nuevo.',
+        details: error.message 
+      }) 
     };
   }
 };
