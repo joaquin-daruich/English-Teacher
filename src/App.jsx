@@ -23,27 +23,26 @@ function App() {
     return 'saludando'
   }
 
-  // Lógica principal al enviar mensaje
+// ... resto del código igual hasta manejarEnvio ...
+
   const manejarEnvio = async (e) => {
     e.preventDefault()
     
-    // 1. Validaciones básicas
     if (!inputValue.trim()) return
     
     setCargando(true)
     setErrorMensaje('')
-    setRespuestaIA('') // Limpiar respuesta anterior
-    setImagenTeacher('/Teacher-saludando.png') // Reset imagen
+    setRespuestaIA('') 
+    setImagenTeacher('/Teacher-saludando.png') 
 
     try {
-      // 2. Llamar a Teacher Lily (Groq API - Texto)
-      const resText = await fetch('/netlify/functions/teacher-chat.js', {
+      // 1. LLAMADA CORREGIDA (Nota el .netlify sin extension)
+      const resText = await fetch('/.netlify/functions/teacher-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: inputValue }),
       })
       
-      // Verificar si hubo errores HTTP antes de intentar leer JSON
       if (!resText.ok) {
         throw new Error(`Error del servidor: ${resText.status}`)
       }
@@ -51,17 +50,15 @@ function App() {
       const dataText = await resText.json()
       
       if (dataText.reply) {
-        // MOSTRAR TEXTO
         setRespuestaIA(dataText.reply)
         
-        // CAMBIAR IMAGEN
         const expresion = obtenerExpresion(dataText.reply)
         setImagenTeacher(`/Teacher-${expresion}.jpg`)
         
-        // GENERAR AUDIO (OPCIONAL - Si falla no bloquea el chat)
+        // 2. LLAMADA DE AUDIO CORREGIDA
         console.log("Intentando generar audio...")
         try {
-          const resAudio = await fetch('/netlify/functions/generate-audio.py', {
+          const resAudio = await fetch('/.netlify/functions/generate-audio', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ text: dataText.reply }),
@@ -71,7 +68,6 @@ function App() {
             const dataAudio = await resAudio.json()
             
             if (dataAudio.audioBase64) {
-              // Convertir base64 a Blob URL
               const byteCharacters = atob(dataAudio.audioBase64)
               const byteNumbers = new Array(byteCharacters.length)
               for (let i = 0; i < byteCharacters.length; i++) {
@@ -81,7 +77,6 @@ function App() {
               const blob = new Blob([byteArray], { type: 'audio/mpeg' })
               const audioUrl = URL.createObjectURL(blob)
               
-              // Reproducir
               if (audioRef.current) {
                 audioRef.current.src = audioUrl
                 audioRef.current.play().catch(e => console.log("Error al reproducir:", e))
@@ -91,7 +86,6 @@ function App() {
             console.warn("La función de audio no está disponible aún.")
           }
         } catch (audioErr) {
-          // Silenciar el error de audio para no molestar al usuario
           console.warn("Audio falló pero el chat continúa:", audioErr.message)
         }
         
@@ -106,6 +100,8 @@ function App() {
       setCargando(false)
     }
   }
+
+// ... resto del retorno JSX igual ...
 
   return (
     <>
