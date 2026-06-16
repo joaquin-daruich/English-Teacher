@@ -61,7 +61,7 @@ function App() {
         // GENERAR AUDIO (OPCIONAL - Si falla no bloquea el chat)
         console.log("Intentando generar audio...")
         try {
-          const resAudio = await fetch('/netlify/functions/generate-audio', {
+          const resAudio = await fetch('/netlify/functions/generate-audio.py', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ text: dataText.reply }),
