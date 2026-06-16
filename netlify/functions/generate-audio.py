@@ -1,4 +1,3 @@
-# .netlify/functions/generate-audio.py
 import asyncio
 import edge_tts
 import json
@@ -7,7 +6,9 @@ import base64
 import tempfile
 import os
 
-VOICE = "es-MX-DaliaNeural" 
+print('hola el codigo se ejecuta')
+
+VOICE = "es-MX-DaliaNeural"
 
 async def generate_audio(text):
     output_path = f"{tempfile.gettempdir()}/{uuid.uuid4()}.mp3"
@@ -17,7 +18,7 @@ async def generate_audio(text):
     with open(output_path, 'rb') as f:
         audio_data = f.read()
     
-    os.remove(output_path) 
+    os.remove(output_path)
     return base64.b64encode(audio_data).decode('utf-8')
 
 def handler(event, context):
@@ -42,5 +43,6 @@ def handler(event, context):
             'body': json.dumps({'audioBase64': audio_base64})
         }
     except Exception as e:
-        print(f"Error: {str(e)}") # Este log se ve en Netlify Functions Log
+        print(f"Error: {str(e)}")
         return {'statusCode': 500, 'body': json.dumps({'error': str(e)})}
+    
