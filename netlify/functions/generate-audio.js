@@ -1,108 +1,95 @@
-import { exec } from 'child_process';
-import { promisify } from 'util';
-import * as fs from 'fs';
-import * as path from 'path';
-import { fileURLToPath } from 'url';
+const edgeTts = require('edge-tts');
 
-const execPromise = promisify(exec);
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+exports.handler = async (event, context) => {
+  // Log para debugging
+  console.log('[generate-audio] Función iniciada');
+  console.log('[generate-audio] Evento recibido:', event.httpMethod);
 
-const VOICE = "es-MX-DaliaNeural";
+  // Validar método
+  if (event.httpMethod !== 'POST') {
+    return {
+      statusCode: 405,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+      },
+      body: JSON.stringify({ error: 'Método no permitido' }),
+    };
+  }
 
-async function generateAudio(text) {
   try {
-    // Importar edge-tts dinámicamente
-    const edgeTts = await import('edge-tts');
-    const { Communicate } = edgeTts;
+    // Parsear body
+    const body = JSON.parse(event.body);
+    const text = body.text?.trim();
 
-    // Crear comunicador
-    const communicate = new Communicate(text, VOICE);
+    console.log('[generate-audio] Texto recibido:', text?.substring(0, 50));
 
-    // Crear buffer de audio
+    if (!text) {
+      return {
+        statusCode: 400,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        },
+        body: JSON.stringify({ error: 'No hay texto para sintetizar' }),
+      };
+    }
+
+    // Generar audio con edge-tts
+    console.log('[generate-audio] Iniciando síntesis de voz...');
+    
+    const communicate = new edgeTts.Communicate(text, 'es-MX-DaliaNeural');
     const audioChunks = [];
 
-    return new Promise((resolve, reject) => {
+    // Recopilar chunks de audio
+    await new Promise((resolve, reject) => {
       communicate.on('data', (chunk) => {
+        console.log('[generate-audio] Chunk recibido:', chunk.length, 'bytes');
         audioChunks.push(chunk);
       });
 
       communicate.on('end', () => {
-        const audioBuffer = Buffer.concat(audioChunks);
-        const base64Audio = audioBuffer.toString('base64');
-        resolve(base64Audio);
+        console.log('[generate-audio] Síntesis completada');
+        resolve();
       });
 
       communicate.on('error', (error) => {
+        console.error('[generate-audio] Error en edge-tts:', error);
         reject(error);
       });
-
-      // Iniciar la generación
-      communicate.send();
     });
+
+    // Concatenar chunks en un buffer
+    const audioBuffer = Buffer.concat(audioChunks);
+    console.log('[generate-audio] Buffer total:', audioBuffer.length, 'bytes');
+
+    // Convertir a base64
+    const audioBase64 = audioBuffer.toString('base64');
+
+    return {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Cache-Control': 'no-cache',
+      },
+      body: JSON.stringify({ audioBase64 }),
+    };
+
   } catch (error) {
-    throw new Error(`Error generando audio: ${error.message}`);
-  }
-}
+    console.error('[generate-audio] Error general:', error.message);
+    console.error('[generate-audio] Stack:', error.stack);
 
-export default async (req, context) => {
-  // Validar método
-  if (req.method !== 'POST') {
-    return new Response(
-      JSON.stringify({ error: 'Método no permitido' }),
-      { 
-        status: 405,
-        headers: { 
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        }
-      }
-    );
-  }
-
-  try {
-    const body = await req.json();
-    const text = body.text?.trim();
-
-    if (!text) {
-      return new Response(
-        JSON.stringify({ error: 'No hay texto para sintetizar' }),
-        { 
-          status: 400,
-          headers: { 
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
-          }
-        }
-      );
-    }
-
-    console.log(`[generate-audio] Generando audio para: "${text.substring(0, 50)}..."`);
-
-    const audioBase64 = await generateAudio(text);
-
-    return new Response(
-      JSON.stringify({ audioBase64 }),
-      {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
-          'Cache-Control': 'no-cache'
-        }
-      }
-    );
-  } catch (error) {
-    console.error('[generate-audio] Error:', error.message);
-    
-    return new Response(
-      JSON.stringify({ error: `Error de TTS: ${error.message}` }),
-      {
-        status: 500,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        }
-      }
-    );
+    return {
+      statusCode: 500,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+      },
+      body: JSON.stringify({ 
+        error: `Error de TTS: ${error.message}`,
+        details: error.stack 
+      }),
+    };
   }
 };

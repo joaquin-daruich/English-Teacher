@@ -16,3 +16,13 @@
   
 [[plugins]]
   package = "@netlify/plugin-functions-install-core"
+
+
+[build]
+  command = "npm run build"
+  functions = "netlify/functions"
+  publish = "dist"
+
+[[plugins]]
+  package = "@netlify/plugin-functions-install-core"
+
