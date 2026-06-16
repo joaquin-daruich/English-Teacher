@@ -1,4 +1,3 @@
-// netlify/functions/teacher-chat.js
 const axios = require('axios');
 
 exports.handler = async (event, context) => {
