@@ -6,7 +6,6 @@ import base64
 import tempfile
 import os
 
-print('hola el codigo se ejecuta')
 
 VOICE = "es-MX-DaliaNeural"
 
