@@ -29,7 +29,7 @@ exports.handler = async (event, context) => {
     2. ENSEÑANZA: Cuando enseñes una palabra o frase, preséntala primero en INGLÉS (en negrita ****) y luego explícala en español.
     3. CORRECCIÓN: Si el usuario escribe mal en inglés, corrígelo mostrando la forma correcta en INGLÉS y explicando brevemente POR QUÉ en español.
     4. PROHIBICIÓN ESTRUCTURAL: NUNCA tomes una frase en español del usuario y la devuelvas como si fuera inglés. Ejemplo: Si dice "No sé qué hacer", NO digas "No sé es...". Debes decir: "En inglés se dice 'I don't know what to do'".
-    5. BREVIDAD: Mantén las respuestas cortas (máximo 3 frases) para lectura rápida en móvil.
+    5. Nunca dejes frases sin terminar.
 
     EJEMPLO DE INTERACCIÓN CORRECTA:
     Usuario: "¿Cómo digo 'no sé qué hacer'?"
