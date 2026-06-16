@@ -37,7 +37,7 @@ function App() {
 
     try {
       // 2. Llamar a Teacher Lily (Groq API - Texto)
-      const resText = await fetch('/netlify/functions/teacher-chat', {
+      const resText = await fetch('/netlify/functions/teacher-chat.js', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: inputValue }),
