@@ -2,128 +2,68 @@
 const axios = require('axios');
 
 exports.handler = async (event, context) => {
+  console.log('[Audio] Inicio de función...');
+  
   if (event.httpMethod !== 'POST') {
+    console.log('[Audio] Método no permitido');
     return { statusCode: 405, body: JSON.stringify({ error: 'Método no permitido' }) };
   }
 
+  let text;
   try {
-    const { text } = JSON.parse(event.body);
+    const parsed = JSON.parse(event.body);
+    text = parsed.text;
+  } catch (e) {
+    console.log('[Audio] Error parseando cuerpo:', e.message);
+    return { statusCode: 400, body: JSON.stringify({ error: 'Formato inválido' }) };
+  }
 
-    if (!text || text.trim() === '') {
-      return { statusCode: 400, body: JSON.stringify({ error: 'No hay texto para generar audio' }) };
-    }
+  if (!text || text.trim() === '') {
+    console.log('[Audio] Texto vacío');
+    return { statusCode: 400, body: JSON.stringify({ error: 'No hay texto' }) };
+  }
 
-    // Limpiar texto: quitar markdown (**, #, etc.) para que la voz no lea asteriscos
-    let cleanText = text.replace(/[*#_]/g, '').trim();
+  // Limpiar markdown
+  let cleanText = text.replace(/[*#_]/g, '').trim();
+  cleanText = cleanText.substring(0, 200); // Límite estricto para evitar timeouts
+
+  console.log(`[Audio] Procesando ${cleanText.length} caracteres...`);
+
+  try {
+    const voiceLang = 'es-MX';
+    const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(cleanText)}&tl=${voiceLang}&client=tw-ob`;
+
+    console.log('[Audio] Llamando a Google TTS...');
     
-    // Limpiamos saltos de línea múltiples pero dejamos uno simple para pausas
-    cleanText = cleanText.replace(/\n+/g, '. ').replace(/\.\s*\./g, '.').trim();
-
-    // Si el texto es corto (< 200 chars), hacerlo directamente
-    if (cleanText.length <= 190) {
-      return await generarAudioSingle(cleanText);
-    }
-
-    // Si es largo, dividimos en oraciones (aprox 150-180 caracteres por fragmento)
-    const fragmentos = dividirTexto(cleanText, 180);
-    
-    console.log(`Dividiendo texto en ${fragmentos.length} fragmentos...`);
-
-    // Generar audio para cada fragmento
-    const audiosPromises = fragmentos.map(async (fragmento) => {
-      try {
-        const res = await generarAudioSingle(fragmento);
-        return Buffer.from(res.audioBase64, 'base64');
-      } catch (e) {
-        console.error("Error en fragmento:", e.message);
-        return null;
-      }
+    const response = await axios.get(ttsUrl, { 
+      responseType: 'arraybuffer',
+      timeout: 10000
     });
 
-    const buffers = await Promise.all(audiosPromises);
+    const audioBase64 = Buffer.from(response.data).toString('base64');
     
-    // Filtrar buffers nulos y unirlos
-    const validBuffers = buffers.filter(b => b !== null);
+    console.log('[Audio] Éxito! Audio generado.');
     
-    if (validBuffers.length === 0) {
-      throw new Error("No se pudo generar ningún fragmento de audio");
-    }
-
-    // Concatenar Buffers
-    const totalLength = validBuffers.reduce((acc, buf) => acc + buf.length, 0);
-    const mergedBuffer = Buffer.concat(validBuffers, totalLength);
-    
-    const finalBase64 = mergedBuffer.toString('base64');
-
     return {
       statusCode: 200,
       headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
-        'Cache-Control': 'public, max-age=3600'
       },
-      body: JSON.stringify({ 
-        audioBase64: finalBase64,
-        originalLength: cleanText.length,
-        fragmentCount: validBuffers.length
-      }),
+      body: JSON.stringify({ audioBase64 }),
     };
 
   } catch (error) {
-    console.error('[Audio Error]', error.message);
+    console.error('[Audio] ERROR CRÍTICO:', error.message);
+    console.error('[Audio] Código de error:', error.code);
+    console.error('[Audio] Status:', error.response?.status);
+    
     return { 
-      statusCode: 500, 
+      statusCode: 503, 
       body: JSON.stringify({ 
-        error: 'Fallo al generar audio completo.',
+        error: 'Audio no disponible temporalmente',
         details: error.message 
       }) 
     };
   }
 };
-
-// Función auxiliar para dividir texto en oraciones sin cortar palabras
-function dividirTexto(texto, maxLen) {
-  const fragmentos = [];
-  let resto = texto;
-
-  while (resto.length > 0) {
-    if (resto.length <= maxLen) {
-      fragmentos.push(resto);
-      break;
-    }
-
-    // Buscar el último espacio antes del límite máximo
-    const corte = resto.lastIndexOf(' ', maxLen);
-    
-    if (corte === -1) {
-      // Si no hay espacio (palabra muy larga), cortar forzadamente o buscar punto
-      const punto = resto.indexOf('.', maxLen);
-      if (punto !== -1 && punto < maxLen + 20) {
-        fragmentos.push(resto.substring(0, punto + 1));
-        resto = resto.substring(punto + 1).trim();
-      } else {
-        fragmentos.push(resto.substring(0, maxLen));
-        resto = resto.substring(maxLen).trim();
-      }
-    } else {
-      fragmentos.push(resto.substring(0, corte));
-      resto = resto.substring(corte + 1).trim();
-    }
-  }
-  return fragmentos;
-}
-
-// Función para llamar a la API de Google TTS (limpia)
-async function generarAudioSingle(texto) {
-  const voiceLang = 'es-MX'; // Voz mexicana
-  // URL oficial de Google Translate TTS
-  const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(texto)}&tl=${voiceLang}&client=tw-ob`;
-
-  const response = await axios.get(ttsUrl, { 
-    responseType: 'arraybuffer',
-    timeout: 15000
-  });
-
-  const audioBase64 = Buffer.from(response.data).toString('base64');
-  return { audioBase64 };
-}
