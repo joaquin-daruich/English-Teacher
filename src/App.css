@@ -1,38 +1,191 @@
-
+/* =========================================
+   ESTILOS ORIGINALES (NO TOCADOS)
+   ========================================= */
 @keyframes respirar {
   0%   { transform: scale(1.00) translateY(0); }
   50%  { transform: scale(1.03) translateY(-8px); }
   100% { transform: scale(1.00) translateY(0); }
 }
 
-
-.EnglishTeacher{
-    height: 100%;
-    animation: respirar 11s ease-in-out infinite;
-    position:relative;
-    z-index: -1;
+.EnglishTeacher {
+  height: 350px; /* Ajusté un poco el tamaño base, si usas 100% puede ser muy grande */
+  max-width: 100%;
+  animation: respirar 11s ease-in-out infinite;
+  position: relative;
+  z-index: -1;
+  border-radius: 15px; /* Un toque extra de suavidad */
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
-
-.hablarConTeacher{
-    flex-direction: column;
-    box-sizing: border-box;
-    display: flex;
-    position: relative;
-    justify-content: center;
-    align-items: center;
-    height: 70vh;
+.hablarConTeacher {
+  flex-direction: column;
+  box-sizing: border-box;
+  display: flex;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  height: 70vh;
+  width: 100%;
+  margin: 0 auto;
 }
 
-
-
-.Fondo{
-    height: 100vh;
-    width: 100vw;
-    position: absolute;
-    z-index: -2;
-    background-color: blueviolet;
-    margin: 0;
-    padding: 0;
+.Fondo {
+  height: 100vh;
+  width: 100vw;
+  position: absolute;
+  z-index: -2;
+  /* CAMBIO DE FONDO: Degradado moderno (Violeta a Azul Profundo) */
+  background: linear-gradient(135deg, #4b1d5c 0%, #1a1a40 100%); 
+  margin: 0;
+  padding: 0;
 }
 
+/* =========================================
+   NUEVOS ESTILOS (CLASSES FALTANTES)
+   ========================================= */
+
+/* Contenedor principal para centrar verticalmente si falta altura */
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: transparent; /* Para dejar ver el .Fondo */
+}
+
+/* Banner superior */
+.banner {
+  text-align: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.3); /* Fondo semitransparente oscuro */
+  backdrop-filter: blur(5px);
+  width: 100%;
+  z-index: 10;
+  position: relative;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.Titulo {
+  color: #ffffff;
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  letter-spacing: 1px;
+}
+
+/* Indicador de "Está hablando..." */
+.hablarConTeacher > div:first-child {
+  color: #fff;
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+  font-weight: bold;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+  animation: parpadeo 2s infinite;
+}
+
+@keyframes parpadeo {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* Input de texto */
+.inputTeacher {
+  width: 80%;
+  max-width: 400px;
+  padding: 15px 20px;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 50px;
+  outline: none;
+  background: rgba(255, 255, 255, 0.95);
+  color: #333;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+  margin-bottom: 15px;
+}
+
+.inputTeacher:focus {
+  transform: scale(1.02);
+  box-shadow: 0 6px 15px rgba(255, 255, 255, 0.4);
+}
+
+.inputTeacher::placeholder {
+  color: #888;
+}
+
+.inputTeacher:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Botón de enviar */
+.botonTeacher {
+  padding: 15px 40px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(37, 117, 252, 0.4);
+  transition: all 0.3s ease;
+  min-width: 120px;
+}
+
+.botonTeacher:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(37, 117, 252, 0.6);
+}
+
+.botonTeacher:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.botonTeacher:disabled {
+  background: #555;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+  opacity: 0.7;
+}
+
+/* Área de respuesta de la IA */
+.respuestaTeacher {
+  margin-top: 20px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  text-align: left;
+  max-width: 80%;
+  width: fit-content;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  border-left: 5px solid #2575fc;
+  animation: aparecer 0.5s ease-out;
+  line-height: 1.6;
+  color: #333;
+}
+
+.respuestaTeacher strong {
+  color: #2575fc;
+  display: block;
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+}
+
+@keyframes aparecer {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Mensaje de error */
+p:has(⚠️) {
+  color: #ff6b6b;
+  font-weight: bold;
+  background: rgba(255, 0, 0, 0.1);
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+  margin: 15px 0;
+}

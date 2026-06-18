@@ -2,7 +2,6 @@ import { useState, useRef } from 'react'
 import './App.css'
 
 function App() {
-  console.log('holaa')
   const [inputValue, setInputValue] = useState('')
   const [respuestaIA, setRespuestaIA] = useState('')
   const [cargando, setCargando] = useState(false)
@@ -150,14 +149,14 @@ function App() {
             className='EnglishTeacher'
             onError={(e) => { e.target.style.display = 'none' }}
           />
-          <input
+          <input className='inputTeacher'
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             type="text"
             placeholder="Escribe tu pregunta en inglés..."
             disabled={cargando || reproduciendo}
           />
-          <button
+          <button className='botonTeacher'
             type="submit"
             disabled={cargando || reproduciendo || !inputValue.trim()}
           >
@@ -172,7 +171,7 @@ function App() {
         )}
 
         {respuestaIA && (
-          <div>
+          <div className='respuestaTeacher'>
             <strong>Teacher Lily dice:</strong><br/>
             <span>{respuestaIA}</span>
           </div>
