@@ -85,7 +85,7 @@ exports.handler = async (event, context) => {
         source = 'tiktok';
       }
 
-      // Fetch en background con timeout corto
+      // Fetch SIN TIMEOUT AGRESIVO (background job)
       fetch(`${supabaseUrl}/rest/v1/chat_logs`, {
         method: 'POST',
         headers: {
@@ -98,8 +98,7 @@ exports.handler = async (event, context) => {
           user_question: question,
           ai_reply: replyText,
           source: source
-        }),
-        signal: AbortSignal.timeout(5000)
+        })
       }).then(() => console.log('✅ Log guardado en Supabase'))
         .catch(err => console.error('⚠️ Error guardando log (no crítico):', err.message));
     } else {
