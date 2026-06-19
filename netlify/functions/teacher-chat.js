@@ -2,29 +2,25 @@
 const axios = require('axios');
 
 exports.handler = async (event, context) => {
-  // Validar método
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: JSON.stringify({ error: 'Método no permitido' }) };
   }
 
   try {
-    // Parsear cuerpo
     const { question } = JSON.parse(event.body);
     
     if (!question || typeof question !== 'string') {
-      return { statusCode: 400, body: JSON.stringify({ error: 'Falta la pregunta o formato inválido' }) };
+      return { statusCode: 400, body: JSON.stringify({ error: 'Falta la pregunta' }) };
     }
 
-    // Configurar Groq
     const GROQ_API_KEY = process.env.GROQ_API_KEY; 
     const MODEL_NAME = "llama-3.1-8b-instant"; 
     
     if (!GROQ_API_KEY) {
       console.error("❌ FALTA GROQ_API_KEY en Netlify Variables");
-      return { statusCode: 500, body: JSON.stringify({ error: 'Configuración faltante: Falta la API Key en Netlify' }) };
+      return { statusCode: 500, body: JSON.stringify({ error: 'Configuración faltante: Falta la API Key' }) };
     }
 
-    // Prompt del sistema
     const systemPrompt = `Actúa como "Teacher Lily", una profesora nativa de inglés experta, paciente y amigable. 
     SIGUE ESTAS REGLAS ESENCIALES:
     1. Responde siempre al usuario en ESPAÑOL cuando expliques conceptos.
@@ -33,7 +29,6 @@ exports.handler = async (event, context) => {
     4. Mantén las respuestas CORTAS (máximo 2-3 frases) porque esto se verá en TikTok/móvil.
     5. Nunca hables de temas fuera de aprender inglés.`;
 
-    // 1. Llamar a Groq API
     let groqResponse;
     try {
       groqResponse = await axios.post(
@@ -59,6 +54,7 @@ exports.handler = async (event, context) => {
       );
     } catch (groqErr) {
       console.error("Error de Groq API:", groqErr.message);
+      
       if (groqErr.response?.status === 429) {
          return { statusCode: 429, body: JSON.stringify({ error: 'Teacher Lily está descansando, espera unos minutos...' }) };
       }
@@ -71,10 +67,9 @@ exports.handler = async (event, context) => {
       return { statusCode: 500, body: JSON.stringify({ error: 'Hubo un problema conectando con Teacher Lily.' }) };
     }
 
-    // Extraer texto
     const replyText = groqResponse.data.choices[0].message.content;
 
-    // 2. Guardar en Supabase (MEJORADO - background pero con mejor error handling)
+    // Guardar en Supabase (Background pero con mejor handling)
     const supabaseUrl = process.env.SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_ANON_KEY;
 
@@ -85,7 +80,7 @@ exports.handler = async (event, context) => {
         source = 'tiktok';
       }
 
-      // Fire and forget pero con mejor logging
+      // Fire and forget con mejor logging para ver errores reales
       (async () => {
         try {
           const response = await fetch(`${supabaseUrl}/rest/v1/chat_logs`, {
@@ -94,8 +89,7 @@ exports.handler = async (event, context) => {
               'apikey': supabaseKey,
               'Authorization': `Bearer ${supabaseKey}`,
               'Content-Type': 'application/json',
-              'Prefer': 'return=minimal',
-              'User-Agent': 'Teacher-Lily/1.0'
+              'Prefer': 'return=minimal'
             },
             body: JSON.stringify({
               user_question: question,
@@ -108,7 +102,7 @@ exports.handler = async (event, context) => {
             const errorText = await response.text();
             console.error(`❌ Supabase error ${response.status}:`, errorText);
           } else {
-            console.log('✅ Log guardado en Supabase');
+            console.log('✅ Log guardado en Supabase correctamente');
           }
         } catch (err) {
           console.error('⚠️ Error guardando log (no crítico):', err.message);
@@ -118,7 +112,6 @@ exports.handler = async (event, context) => {
       console.log('ℹ️ Variables de Supabase no encontradas, saltando guardado.');
     }
 
-    // 3. Devolver respuesta
     return {
       statusCode: 200,
       headers: {

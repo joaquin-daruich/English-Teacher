@@ -2,7 +2,6 @@ import { useState, useRef } from 'react'
 import './App.css'
 
 function App() {
-  console.log('nose q hizo')
   const [inputValue, setInputValue] = useState('')
   const [respuestaIA, setRespuestaIA] = useState('')
   const [cargando, setCargando] = useState(false)
@@ -95,15 +94,19 @@ function App() {
         if (resAudio.ok) {
           const dataAudio = await resAudio.json();
           if (dataAudio.audioBase64) {
-            // Crear audio URL desde base64
-            const audioUrl = `data:audio/mpeg;base64,${dataAudio.audioBase64}`;
-            
-            if (audioRef.current) {
-              audioRef.current.src = audioUrl;
-              await audioRef.current.play();
-            }
-          } else {
-            console.warn('No hay audioBase64 en respuesta');
+             const byteCharacters = atob(dataAudio.audioBase64);
+             const byteNumbers = new Array(byteCharacters.length);
+             for (let i = 0; i < byteCharacters.length; i++) {
+               byteNumbers[i] = byteCharacters.charCodeAt(i);
+             }
+             const byteArray = new Uint8Array(byteNumbers);
+             const blob = new Blob([byteArray], { type: 'audio/mpeg' });
+             const audioUrl = URL.createObjectURL(blob);
+             
+             if (audioRef.current) {
+               audioRef.current.src = audioUrl;
+               await audioRef.current.play();
+             }
           }
         } else {
           console.warn('Audio falló pero chat continúa');

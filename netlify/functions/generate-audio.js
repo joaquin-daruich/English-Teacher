@@ -1,5 +1,4 @@
 // netlify/functions/generate-audio.js
-const fetch = require('node-fetch');
 
 exports.handler = async (event, context) => {
   console.log('[Audio] Inicio de función...');
@@ -18,102 +17,64 @@ exports.handler = async (event, context) => {
     return { statusCode: 400, body: JSON.stringify({ error: 'Formato inválido' }) };
   }
 
-  if (!text || text.trim() === '') {
-    console.log('[Audio] Texto vacío');
-    return { statusCode: 400, body: JSON.stringify({ error: 'No hay texto' }) };
+  if (!text || typeof text !== 'string' || text.trim() === '') {
+    console.log('[Audio] Texto vacío o invalido');
+    return { statusCode: 400, body: JSON.stringify({ error: 'No hay texto para generar audio' }) };
   }
 
-  // Limpiar markdown
+  // Limpiar markdown (**, #, etc.)
   let cleanText = text.replace(/[*#_]/g, '').trim();
-  cleanText = cleanText.substring(0, 200);
+  
+  // Limitar a 200 caracteres máximo para evitar timeouts de Google TTS
+  if (cleanText.length > 200) {
+    cleanText = cleanText.substring(0, 197) + '...';
+    console.log(`[Audio] Texto recortado de ${text.length} a ${cleanText.length} caracteres`);
+  }
 
   console.log(`[Audio] Procesando ${cleanText.length} caracteres...`);
 
-  // REINTENTOS
-  const maxRetries = 3;
-  let lastError = null;
+  try {
+    const voiceLang = 'es-MX';
+    const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(cleanText)}&tl=${voiceLang}&client=tw-ob`;
 
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      console.log(`[Audio] Intento ${attempt}/${maxRetries}...`);
+    console.log('[Audio] Llamando a Google TTS...');
+    
+    // Usamos fetch NATIVO (disponible en Node.js 18+, sin dependencias externas)
+    const response = await fetch(ttsUrl, { 
+      method: 'GET',
+      timeout: 10000 // 10 segundos de timeout
+    });
 
-      const voiceLang = 'en'; // Cambié a 'en' para inglés (era 'es-MX')
-      const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(cleanText)}&tl=${voiceLang}&client=tw-ob`;
-
-      console.log('[Audio] Llamando a Google TTS...');
-      
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 8000);
-
-      const response = await fetch(ttsUrl, { 
-        method: 'GET',
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-          'Referer': 'https://translate.google.com/',
-        },
-        signal: controller.signal,
-        timeout: 8000
-      });
-
-      clearTimeout(timeout);
-
-      if (!response.ok) {
-        console.warn(`[Audio] HTTP ${response.status} en intento ${attempt}`);
-        
-        if (response.status === 429) {
-          lastError = new Error('Rate limited by Google (429)');
-          throw lastError;
-        }
-        
-        if (response.status === 403) {
-          lastError = new Error('Google bloqueó la IP (403)');
-          throw lastError;
-        }
-
-        lastError = new Error(`HTTP ${response.status}: ${response.statusText}`);
-        throw lastError;
-      }
-
-      const buffer = await response.buffer();
-
-      if (buffer.length === 0) {
-        lastError = new Error('Audio buffer vacío');
-        throw lastError;
-      }
-
-      const audioBase64 = buffer.toString('base64');
-      
-      console.log(`[Audio] ✅ Éxito en intento ${attempt}! ${buffer.length} bytes`);
-      
-      return {
-        statusCode: 200,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
-        },
-        body: JSON.stringify({ audioBase64 }),
-      };
-
-    } catch (error) {
-      lastError = error;
-      console.error(`[Audio] Error en intento ${attempt}:`, error.message);
-
-      if (attempt < maxRetries) {
-        const waitTime = Math.pow(2, attempt - 1) * 1000;
-        console.log(`[Audio] Esperando ${waitTime}ms antes del siguiente intento...`);
-        await new Promise(resolve => setTimeout(resolve, waitTime));
-      }
+    if (!response.ok) {
+      throw new Error(`Google TTS devolvió status ${response.status}`);
     }
-  }
 
-  // Si llegamos aquí, todos los intentos fallaron
-  console.error(`[Audio] ❌ Todos los ${maxRetries} intentos fallaron:`, lastError.message);
-  
-  return { 
-    statusCode: 503, 
-    body: JSON.stringify({ 
-      error: 'Audio no disponible temporalmente',
-      details: lastError.message 
-    }) 
-  };
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const audioBase64 = buffer.toString('base64');
+    
+    console.log('[Audio] ✅ Audio generado exitosamente.');
+    
+    return {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+      },
+      body: JSON.stringify({ audioBase64 }),
+    };
+
+  } catch (error) {
+    console.error('[Audio] ❌ ERROR CRÍTICO:', error.message);
+    console.error('[Audio] Código de error:', error.code || 'unknown');
+    console.error('[Audio] Stack:', error.stack);
+    
+    return { 
+      statusCode: 503, 
+      body: JSON.stringify({ 
+        error: 'Audio no disponible temporalmente',
+        details: error.message 
+      }) 
+    };
+  }
 };
