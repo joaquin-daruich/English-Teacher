@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import './App.css'
 
 function App() {
+  console.log('nose q hizo')
   const [inputValue, setInputValue] = useState('')
   const [respuestaIA, setRespuestaIA] = useState('')
   const [cargando, setCargando] = useState(false)
