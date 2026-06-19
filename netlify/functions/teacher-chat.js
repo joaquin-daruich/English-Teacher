@@ -74,7 +74,7 @@ exports.handler = async (event, context) => {
     // Extraer texto
     const replyText = groqResponse.data.choices[0].message.content;
 
-    // 2. Guardar en Supabase (Opcional - No bloquea respuesta)
+    // 2. Guardar en Supabase (MEJORADO - background pero con mejor error handling)
     const supabaseUrl = process.env.SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_ANON_KEY;
 
@@ -85,22 +85,35 @@ exports.handler = async (event, context) => {
         source = 'tiktok';
       }
 
-      // Fetch SIN TIMEOUT AGRESIVO (background job)
-      fetch(`${supabaseUrl}/rest/v1/chat_logs`, {
-        method: 'POST',
-        headers: {
-          'apikey': supabaseKey,
-          'Authorization': `Bearer ${supabaseKey}`,
-          'Content-Type': 'application/json',
-          'Prefer': 'return=minimal'
-        },
-        body: JSON.stringify({
-          user_question: question,
-          ai_reply: replyText,
-          source: source
-        })
-      }).then(() => console.log('✅ Log guardado en Supabase'))
-        .catch(err => console.error('⚠️ Error guardando log (no crítico):', err.message));
+      // Fire and forget pero con mejor logging
+      (async () => {
+        try {
+          const response = await fetch(`${supabaseUrl}/rest/v1/chat_logs`, {
+            method: 'POST',
+            headers: {
+              'apikey': supabaseKey,
+              'Authorization': `Bearer ${supabaseKey}`,
+              'Content-Type': 'application/json',
+              'Prefer': 'return=minimal',
+              'User-Agent': 'Teacher-Lily/1.0'
+            },
+            body: JSON.stringify({
+              user_question: question,
+              ai_reply: replyText,
+              source: source
+            })
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`❌ Supabase error ${response.status}:`, errorText);
+          } else {
+            console.log('✅ Log guardado en Supabase');
+          }
+        } catch (err) {
+          console.error('⚠️ Error guardando log (no crítico):', err.message);
+        }
+      })();
     } else {
       console.log('ℹ️ Variables de Supabase no encontradas, saltando guardado.');
     }
