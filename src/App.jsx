@@ -264,7 +264,7 @@ function App() {
         {/* Mostrar mensaje de error si existe (condicional) */}
         {errorMensaje && (
           <div className='respuestaTeacher'>
-            <strong>Teacher Lily dice:</strong><br/>
+            <strong>Teacher Lily dice:</strong> 
             <span>
               Lo siento no pude entender bien tu pregunta podrias hacermela de nuevo?
             </span>
@@ -274,7 +274,7 @@ function App() {
         {respuestaIA && (
           <div className='respuestaTeacher'>
             {/* CAMBIO: Usar dangerouslySetInnerHTML para interpretar <strong> como negrita */}
-            <strong>Teacher Lily dice:</strong><br/>
+            <strong>Teacher Lily dice:</strong>
             <span
             dangerouslySetInnerHTML={{ __html: respuestaIA }} />
           </div>)}

@@ -42,14 +42,15 @@ Reglas:
 - Habla de forma natural y conversacional.
 - Si el usuario solo saluda, responde saludando y preguntando en qué puedes ayudar.
 - Si el usuario pregunta algo sobre inglés, explícalo de forma sencilla y muestra un ejemplo.
+- Nunca uses comillas alrededor de ejemplos en inglés.
+- Nunca escribas etiquetas HTML como texto.
+- Si escribes una frase en inglés, toda la frase debe quedar dentro de una única etiqueta <strong></strong>.Ejemplo: 
+<strong>Good night, see you tomorrow.</strong>
+Incorrecto:
+<strong>Good night</strong>, see you tomorrow.
+Incorrecto:
+“<strong>Good night</strong>, see you tomorrow.”
 
-Ejemplo:
-
-Hola. Me alegra verte. ¿Qué te gustaría aprender hoy?
-
-Ejemplo:
-
-Buena pregunta. Para decir que la comida está muy rica puedes usar <strong>The food is very tasty.</strong> Se usa cuando algo tiene muy buen sabor.
 `;
 
     let groqResponse;
@@ -64,7 +65,7 @@ Buena pregunta. Para decir que la comida está muy rica puedes usar <strong>The 
           ],
           temperature: 0.45,       // ✅ Corregido: número directo, sin comillas ni errores de sintaxis
           top_p: 0.8,              // ✅ Alineado correctamente
-          max_tokens: 333,         // ✅ Límite estricto para evitar respuestas largas
+          max_tokens: 666,         // ✅ Límite estricto para evitar respuestas largas
           stream: false
         },
         {
