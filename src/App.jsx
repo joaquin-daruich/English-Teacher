@@ -8,12 +8,11 @@ function App() {
   
   // Estado para almacenar y mostrar la respuesta de texto generada por la IA
   const [respuestaIA, setRespuestaIA] = useState('') 
+
+  const [errorMensaje, setErrorMensaje] = useState(false)
   
   // Estado booleano para deshabilitar inputs y mostrar "Pensando..." mientras carga la respuesta
   const [cargando, setCargando] = useState(false) 
-  
-  // Estado para manejar mensajes de error críticos y mostrarlos al usuario
-  const [errorMensaje, setErrorMensaje] = useState('') 
   
   // Estado booleano para saber si el audio está reproduciéndose, útil para UX (deshabilitar botón, cambiar icono)
   const [reproduciendo, setReproduciendo] = useState(false)
@@ -25,7 +24,6 @@ function App() {
   const audioRef = useRef(null)
 
   // Función auxiliar que actualmente retorna el texto tal cual. 
-  // Se mantuvo por compatibilidad con la estructura original o podría usarse aquí una lógica simple de mapeo de expresiones si no se usara la IA.
   const obtenerExpresion = (texto) => texto
 
   // Manejador principal del envío del formulario. Es asíncrono porque realiza múltiples llamadas a APIs externas.
@@ -55,6 +53,8 @@ function App() {
 
       // Verificamos si la respuesta HTTP fue exitosa (status 200-299). Si no, capturamos el error del servidor.
       if (!resText.ok) {
+        // Mostramos error en el frontEnd
+        setErrorMensaje(true)
         // Intentamos leer el mensaje de error devuelto por nuestro backend para dar feedback específico al usuario.
         const errorData = await resText.json().catch(() => ({}));
         // Lanzamos un Error personalizado que incluye el mensaje del servidor o el código de estado si falla el parseo.
@@ -68,6 +68,8 @@ function App() {
       if (!dataText.reply || !dataText.reply.trim()) {
         console.error("Respuesta recibida:", dataText);
         throw new Error("Teacher Lily devolvió una respuesta vacía.");
+        // Mostramos error en el frontEnd
+        setErrorMensaje(true)
       }
 
       // Actualizamos el estado de respuesta para que el componente renderice el texto de la IA en pantalla.
@@ -195,8 +197,8 @@ function App() {
       // Bloque CATCH GENERAL:
       // Captura cualquier error ocurrido en los pasos 1, 2 o 3 que no haya sido manejado individualmente.
       console.error('Error general:', err);
-      // Mostramos un mensaje amigable al usuario derivado del error técnico.
-      setErrorMensaje(err.message || 'Problema con Teacher Lily');
+      // Mostramos error en el frontEnd
+        setErrorMensaje(true)
     } finally {
       // Bloque FINALLY:
       // Se ejecuta SIEMPRE, sin importar si hubo éxito o error.
@@ -216,73 +218,72 @@ function App() {
   // --- RENDERIZADO (VISTA) ---
   return (
     <>
+
       {/* Header/Banner de la aplicación */}
       <div className='banner'>
         <h1 className='Titulo'>English Teacher con IA</h1>
       </div>
-      
-      {/* Contenedor Principal centrando el contenido */}
-      <div>
-        {/* Condicional: Muestra indicador de "Escuchando" solo si el estado de reproducción es true */}
-        {reproduciendo && (
-          <div>
-            🔊 Teacher está hablando...
-          </div>
-        )}
+
+      {/* Condicional: Muestra indicador de "Escuchando" solo si el estado de reproducción es true */}
+      {reproduciendo && (
+        <div>
+          🔊 Teacher está hablando...
+        </div>
+      )}
         
         {/* Formulario que captura la interacción del usuario */}
-        <form className='hablarConTeacher' onSubmit={manejarEnvio}>
-          {/* Imagen dinámica: Cambia su fuente (src) según el estado imagenTeacher */}
-          <img
-            src={imagenTeacher}
-            alt="Teacher"
-            className='EnglishTeacher'
-            // onErrore: Si la imagen falla al cargar (ej: archivo no encontrado), oculta el elemento para no mostrar el icono de error feo.
-            onError={(e) => { e.target.style.display = 'none' }}
-          />
-          
-          {/* Input de texto: Controlado por React (value) y actualizado con onChange */}
-          <input className='inputTeacher'
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            type="text"
-            placeholder="Escribe tu pregunta en inglés..."
-            // Deshabilitado visualmente mientras se carga o reproduce audio.
-            disabled={cargando || reproduciendo}
-          />
-          
-          {/* Botón de envío: Texto dinámico según el estado (cargando/reproduciendo/enviar) */}
-          <button className='botonTeacher'
-            type="submit"
-            // Lógica de deshabilitado: No enviar si está cargando, reproduciendo o está vacío.
-            disabled={cargando || reproduciendo || !inputValue.trim()}
-          >
-            {cargando ? '⏳ Pensando...' : reproduciendo ? '🔊 Escuchando...' : 'Enviar'}
-          </button>
+      <form className='hablarConTeacher' onSubmit={manejarEnvio}>
+        {/* Imagen dinámica: Cambia su fuente (src) según el estado imagenTeacher */}
+        <img
+          src={imagenTeacher}
+          alt="Teacher"
+          className='EnglishTeacher'
+          // onErrore: Si la imagen falla al cargar (ej: archivo no encontrado), oculta el elemento para no mostrar el icono de error feo.
+          onError={(e) => { e.target.style.display = 'none' }}
+        />
 
-          {respuestaIA && (
-  <div className='respuestaTeacher'>
-    {/* CAMBIO: Usar dangerouslySetInnerHTML para interpretar <strong> como negrita */}
-    <strong>Teacher Lily dice:</strong><br/>
-    <span style={{ marginTop: '10px', display: 'block', lineHeight: '1.5' }} 
-          dangerouslySetInnerHTML={{ __html: respuestaIA }} />
-  </div>
-)}
-        </form>
+        {/* Input de texto: Controlado por React (value) y actualizado con onChange */}
+        <input className='inputTeacher'
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          type="text"
+          placeholder="Escribe tu pregunta en inglés..."
+          // Deshabilitado visualmente mientras se carga o reproduce audio.
+          disabled={cargando || reproduciendo}
+        />
+
+        {/* Botón de envío: Texto dinámico según el estado (cargando/reproduciendo/enviar)*/}
+        <button className='botonTeacher'
+          type="submit"
+          // Lógica de deshabilitado: No enviar si está cargando, reproduciendo o está vacío.
+          disabled={cargando || reproduciendo || !inputValue.trim()}
+          >
+          {cargando ? '⏳ Pensando...' : reproduciendo ? '🔊 Escuchando...' : 'Enviar'}
+        </button>
 
         {/* Mostrar mensaje de error si existe (condicional) */}
         {errorMensaje && (
-          <p>
-            ⚠️ {errorMensaje}
-          </p>
+          <div className='respuestaTeacher'>
+            <strong>Teacher Lily dice:</strong><br/>
+            <span>
+              Lo siento no pude entender bien tu pregunta podrias hacermela de nuevo?
+            </span>
+          </div>
         )}
 
+        {respuestaIA && (
+          <div className='respuestaTeacher'>
+            {/* CAMBIO: Usar dangerouslySetInnerHTML para interpretar <strong> como negrita */}
+            <strong>Teacher Lily dice:</strong><br/>
+            <span
+            dangerouslySetInnerHTML={{ __html: respuestaIA }} />
+          </div>)}
+      </form>
 
+      {/* Elemento de audio oculto (display: none en CSS) que maneja la reproducción */}
+      <audio ref={audioRef} style={{ display: 'none' }} onEnded={handleAudioEnd} />
 
-        {/* Elemento de audio oculto (display: none en CSS) que maneja la reproducción */}
-        <audio ref={audioRef} style={{ display: 'none' }} onEnded={handleAudioEnd} />
-      </div>
-    </>
+  </>
   )
 }
 

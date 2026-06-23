@@ -64,7 +64,7 @@ Buena pregunta. Para decir que la comida está muy rica puedes usar <strong>The 
           ],
           temperature: 0.45,       // ✅ Corregido: número directo, sin comillas ni errores de sintaxis
           top_p: 0.8,              // ✅ Alineado correctamente
-          max_tokens: 180,         // ✅ Límite estricto para evitar respuestas largas
+          max_tokens: 333,         // ✅ Límite estricto para evitar respuestas largas
           stream: false
         },
         {
