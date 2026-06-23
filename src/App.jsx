@@ -261,7 +261,7 @@ function App() {
           {cargando ? '⏳ Pensando...' : reproduciendo ? '🔊 Escuchando...' : 'Enviar'}
         </button>
 
-        {/* Mostrar mensaje de error si existe (condicional) */}
+        {/* Si hay error en el backend mostrar texto texto amigable en el frontEnd*/}
         {errorMensaje && (
           <div className='respuestaTeacher'>
             <strong>Teacher Lily dice:</strong> 
