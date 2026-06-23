@@ -16,28 +16,22 @@
 
 /* Estilo para la Imagen Principal (Teacher Lily) */
 .EnglishTeacher {
-  height: 350px; /* Altura fija para mantener consistencia visual en diferentes pantallas. */
+  height: 100%;
   max-width: 100%; /* Asegura que no exceda el ancho del contenedor (responsive). */
   animation: respirar 11s ease-in-out infinite; /* Aplica la animación definida arriba: duración larga (11s), 
                                                   curva de velocidad suave (ease-in-out) y repetición infinita. */
-  position: relative; /* Necesario para que z-index funcione correctamente. */
-  z-index: -1; /* Coloca la imagen detrás de los elementos interactivos (input, botones) pero delante del fondo. */
-  border-radius: 15px; /* Bordes redondeados para un look más moderno y amigable. */
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2); /* Sombra difuminada para dar profundidad y separar la imagen del fondo. */
 }
 
 
 /* Estilo del Formulario de Interacción (Input + Botón + Imagen) */
 .hablarConTeacher {
+  gap: 2%;
   flex-direction: column; /* Organiza los hijos (imagen, input, botón) en columna vertical. */
-  box-sizing: border-box; /* Incluye padding y borde en el cálculo del ancho/alto total. */
   display: flex; /* Activa Flexbox para alineación fácil. */
-  position: relative; /* Contenedor relativo para posicionamiento interno si fuera necesario. */
   justify-content: center; /* Centra todo horizontalmente. */
   align-items: center; /* Centra todo verticalmente dentro del contenedor. */
   height: 70vh; /* Ocupa el 70% de la altura visible de la pantalla, ideal para móviles. */
-  width: 100%; /* Ancho completo disponible. */
-  margin: 0 auto; /* Centra el bloque del formulario horizontalmente en la página. */
+  width: 100%; /* Para que ocupe toda la pantalla y la pagina se vea completa en todos los dispositivos */
 }
 
 
@@ -50,8 +44,6 @@
   /* Degradado lineal de 135 grados: De Violeta Oscuro (#4b1d5c) a Azul Noche (#1a1a40).
      Da un tono 'tecnológico/IA' y elegante, evitando colores planos aburridos. */
   background: linear-gradient(135deg, #4b1d5c 0%, #1a1a40 100%); 
-  margin: 0;
-  padding: 0;
 }
 
 /* =========================================
@@ -63,13 +55,11 @@ body, html {
   margin: 0;
   padding: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Tipografía moderna y legible por defecto. */
-  background-color: transparent; /* Permite ver el .Fondo debajo. */
 }
 
 /* Banner Superior */
 .banner {
   text-align: center; /* Centra el texto del título. */
-  padding: 20px; /* Espacio interno para que el título no toque los bordes. */
   background: rgba(0, 0, 0, 0.3); /* Fondo semitransparente negro (30% opacidad) para contraste. */
   backdrop-filter: blur(5px); /* Efecto de desenfoque (glassmorphism) en lo que hay detrás. */
   width: 100%;
@@ -84,14 +74,13 @@ body, html {
   font-weight: 700; /* Negrita para destacar. */
   margin: 0;
   text-shadow: 0 2px 4px rgba(0,0,0,0.5); /* Sombra en el texto para mejor lectura sobre fondos complejos. */
-  letter-spacing: 1px; /* Espaciado entre letras para elegancia. */
+  letter-spacing: 1.2px; /* Espaciado entre letras para elegancia. */
 }
 
 /* Indicador de reproducción */
 .hablarConTeacher > div:first-child {
   color: #fff;
   font-size: 1.1rem;
-  margin-bottom: 15px;
   font-weight: bold;
   text-shadow: 0 1px 3px rgba(0,0,0,0.6);
   /* Animación opcional de parpadeo para indicar actividad en tiempo real. */
@@ -105,9 +94,8 @@ body, html {
 
 /* Input de Texto */
 .inputTeacher {
+  line-height: 2.5; 
   width: 80%;
-  max-width: 400px;
-  padding: 15px 20px;
   font-size: 1.1rem;
   border: none;
   border-radius: 50px; /* Bordes completamente redondos (estilo píldora). */
@@ -116,7 +104,6 @@ body, html {
   color: #333;
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
   transition: all 0.3s ease; /* Transiciones suaves para hover/focus. */
-  margin-bottom: 15px;
 }
 
 .inputTeacher:focus {
@@ -136,8 +123,8 @@ body, html {
 
 /* Botón de Enviar */
 .botonTeacher {
-  padding: 15px 40px;
-  font-size: 1.1rem;
+  width: 35%;
+  font-size: 2.1rem;
   font-weight: 600;
   color: white;
   background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%); /* Gradiente llamativo violeta-azul. */
@@ -146,7 +133,6 @@ body, html {
   cursor: pointer;
   box-shadow: 0 4px 15px rgba(37, 117, 252, 0.4);
   transition: all 0.3s ease;
-  min-width: 120px;
 }
 
 .botonTeacher:hover:not(:disabled) {
@@ -168,12 +154,10 @@ body, html {
 
 /* Área de Respuesta */
 .respuestaTeacher {
-  margin-top: 20px;
-  padding: 20px;
+
   background: rgba(255, 255, 255, 0.95);
   border-radius: 15px;
   text-align: left;
-  max-width: 80%;
   width: fit-content;
   box-shadow: 0 4px 15px rgba(0,0,0,0.2);
   border-left: 5px solid #2575fc; /* Borde lateral de color para identificar que es la IA. */
@@ -185,7 +169,6 @@ body, html {
 .respuestaTeacher strong {
   color: #2575fc;
   display: block;
-  margin-bottom: 10px;
   font-size: 1.2rem;
 }
 
@@ -199,8 +182,6 @@ p:has(⚠️) {
   color: #ff6b6b; /* Rojo suave para alertas. */
   font-weight: bold;
   background: rgba(255, 0, 0, 0.1);
-  padding: 10px;
   border-radius: 8px;
   text-align: center;
-  margin: 15px 0;
 }
