@@ -1,85 +1,100 @@
 /* =========================================
-   ESTILOS ORIGINALES (NO TOCADOS)
+   ANIMACIÓN DE "RESPIRACIÓN" PARA LA IMAGEN
    ========================================= */
+/* Define una animación keyframe llamada 'respirar' que crea un efecto de vida suave.
+   Es usada en la imagen de Teacher para que se sienta como si estuviera 'viva'. */
 @keyframes respirar {
+  /* Estado inicial (0%): Escala normal (1.0) y sin movimiento vertical. */
   0%   { transform: scale(1.00) translateY(0); }
+  /* Estado medio (50%): La imagen crece ligeramente (1.03) y sube 8px. 
+     Esto simula una inhalación o un saludo amigable. */
   50%  { transform: scale(1.03) translateY(-8px); }
+  /* Estado final (100%): Vuelve a su posición original, completando el ciclo. */
   100% { transform: scale(1.00) translateY(0); }
 }
 
+
+/* Estilo para la Imagen Principal (Teacher Lily) */
 .EnglishTeacher {
-  height: 350px; /* Ajusté un poco el tamaño base, si usas 100% puede ser muy grande */
-  max-width: 100%;
-  animation: respirar 11s ease-in-out infinite;
-  position: relative;
-  z-index: -1;
-  border-radius: 15px; /* Un toque extra de suavidad */
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  height: 350px; /* Altura fija para mantener consistencia visual en diferentes pantallas. */
+  max-width: 100%; /* Asegura que no exceda el ancho del contenedor (responsive). */
+  animation: respirar 11s ease-in-out infinite; /* Aplica la animación definida arriba: duración larga (11s), 
+                                                  curva de velocidad suave (ease-in-out) y repetición infinita. */
+  position: relative; /* Necesario para que z-index funcione correctamente. */
+  z-index: -1; /* Coloca la imagen detrás de los elementos interactivos (input, botones) pero delante del fondo. */
+  border-radius: 15px; /* Bordes redondeados para un look más moderno y amigable. */
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2); /* Sombra difuminada para dar profundidad y separar la imagen del fondo. */
 }
 
+
+/* Estilo del Formulario de Interacción (Input + Botón + Imagen) */
 .hablarConTeacher {
-  flex-direction: column;
-  box-sizing: border-box;
-  display: flex;
-  position: relative;
-  justify-content: center;
-  align-items: center;
-  height: 70vh;
-  width: 100%;
-  margin: 0 auto;
+  flex-direction: column; /* Organiza los hijos (imagen, input, botón) en columna vertical. */
+  box-sizing: border-box; /* Incluye padding y borde en el cálculo del ancho/alto total. */
+  display: flex; /* Activa Flexbox para alineación fácil. */
+  position: relative; /* Contenedor relativo para posicionamiento interno si fuera necesario. */
+  justify-content: center; /* Centra todo horizontalmente. */
+  align-items: center; /* Centra todo verticalmente dentro del contenedor. */
+  height: 70vh; /* Ocupa el 70% de la altura visible de la pantalla, ideal para móviles. */
+  width: 100%; /* Ancho completo disponible. */
+  margin: 0 auto; /* Centra el bloque del formulario horizontalmente en la página. */
 }
 
+
+/* Estilo del Fondo General */
 .Fondo {
-  height: 100vh;
-  width: 100vw;
-  position: absolute;
-  z-index: -2;
-  /* CAMBIO DE FONDO: Degradado moderno (Violeta a Azul Profundo) */
+  height: 100vh; /* Altura completa de la ventana gráfica. */
+  width: 100vw; /* Ancho completo de la ventana gráfica. */
+  position: absolute; /* Lo saca del flujo normal para que quede detrás de todo. */
+  z-index: -2; /* Capa más baja: detrás de la imagen y los controles. */
+  /* Degradado lineal de 135 grados: De Violeta Oscuro (#4b1d5c) a Azul Noche (#1a1a40).
+     Da un tono 'tecnológico/IA' y elegante, evitando colores planos aburridos. */
   background: linear-gradient(135deg, #4b1d5c 0%, #1a1a40 100%); 
   margin: 0;
   padding: 0;
 }
 
 /* =========================================
-   NUEVOS ESTILOS (CLASSES FALTANTES)
+   ESTILOS ADICIONALES (CLASSES FALTANTES)
    ========================================= */
 
-/* Contenedor principal para centrar verticalmente si falta altura */
+/* Reset básico para cuerpo y html */
 body, html {
   margin: 0;
   padding: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: transparent; /* Para dejar ver el .Fondo */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Tipografía moderna y legible por defecto. */
+  background-color: transparent; /* Permite ver el .Fondo debajo. */
 }
 
-/* Banner superior */
+/* Banner Superior */
 .banner {
-  text-align: center;
-  padding: 20px;
-  background: rgba(0, 0, 0, 0.3); /* Fondo semitransparente oscuro */
-  backdrop-filter: blur(5px);
+  text-align: center; /* Centra el texto del título. */
+  padding: 20px; /* Espacio interno para que el título no toque los bordes. */
+  background: rgba(0, 0, 0, 0.3); /* Fondo semitransparente negro (30% opacidad) para contraste. */
+  backdrop-filter: blur(5px); /* Efecto de desenfoque (glassmorphism) en lo que hay detrás. */
   width: 100%;
-  z-index: 10;
+  z-index: 10; /* Asegura que esté siempre encima de todo. */
   position: relative;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3); /* Sombra inferior para separarlo del contenido. */
 }
 
 .Titulo {
-  color: #ffffff;
-  font-size: 1.3rem;
-  font-weight: 700;
+  color: #ffffff; /* Texto blanco para máximo contraste. */
+  font-size: 2rem; /* Tamaño grande para jerarquía visual. */
+  font-weight: 700; /* Negrita para destacar. */
   margin: 0;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-  letter-spacing: 1px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5); /* Sombra en el texto para mejor lectura sobre fondos complejos. */
+  letter-spacing: 1px; /* Espaciado entre letras para elegancia. */
 }
 
-/* Indicador de "Está hablando..." */
+/* Indicador de reproducción */
 .hablarConTeacher > div:first-child {
   color: #fff;
   font-size: 1.1rem;
   margin-bottom: 15px;
   font-weight: bold;
   text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+  /* Animación opcional de parpadeo para indicar actividad en tiempo real. */
   animation: parpadeo 2s infinite;
 }
 
@@ -88,44 +103,44 @@ body, html {
   50% { opacity: 0.6; }
 }
 
-/* Input de texto */
+/* Input de Texto */
 .inputTeacher {
   width: 80%;
   max-width: 400px;
   padding: 15px 20px;
   font-size: 1.1rem;
   border: none;
-  border-radius: 50px;
-  outline: none;
-  background: rgba(255, 255, 255, 0.95);
+  border-radius: 50px; /* Bordes completamente redondos (estilo píldora). */
+  outline: none; /* Quita el borde azul por defecto del navegador al hacer clic. */
+  background: rgba(255, 255, 255, 0.95); /* Blanco casi sólido para legibilidad. */
   color: #333;
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  transition: all 0.3s ease;
+  transition: all 0.3s ease; /* Transiciones suaves para hover/focus. */
   margin-bottom: 15px;
 }
 
 .inputTeacher:focus {
-  transform: scale(1.02);
-  box-shadow: 0 6px 15px rgba(255, 255, 255, 0.4);
+  transform: scale(1.02); /* Pequeño zoom al escribir para feedback visual. */
+  box-shadow: 0 6px 15px rgba(255, 255, 255, 0.4); /* Brillo extra. */
 }
 
 .inputTeacher::placeholder {
-  color: #888;
+  color: #888; /* Color suave para el texto de ayuda. */
 }
 
 .inputTeacher:disabled {
-  background: #ccc;
+  background: #ccc; /* Gris cuando está deshabilitado. */
   cursor: not-allowed;
   transform: none;
 }
 
-/* Botón de enviar */
+/* Botón de Enviar */
 .botonTeacher {
   padding: 15px 40px;
   font-size: 1.1rem;
   font-weight: 600;
   color: white;
-  background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+  background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%); /* Gradiente llamativo violeta-azul. */
   border: none;
   border-radius: 50px;
   cursor: pointer;
@@ -135,12 +150,12 @@ body, html {
 }
 
 .botonTeacher:hover:not(:disabled) {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(37, 117, 252, 0.6);
+  transform: translateY(-3px); /* Se eleva al pasar el mouse. */
+  box-shadow: 0 8px 20px rgba(37, 117, 252, 0.6); /* Sombra más grande. */
 }
 
 .botonTeacher:active:not(:disabled) {
-  transform: translateY(1px);
+  transform: translateY(1px); /* Efecto de "presionado". */
 }
 
 .botonTeacher:disabled {
@@ -151,9 +166,9 @@ body, html {
   opacity: 0.7;
 }
 
-/* Área de respuesta de la IA */
+/* Área de Respuesta */
 .respuestaTeacher {
-  margin-top: 13px;
+  margin-top: 20px;
   padding: 20px;
   background: rgba(255, 255, 255, 0.95);
   border-radius: 15px;
@@ -161,8 +176,8 @@ body, html {
   max-width: 80%;
   width: fit-content;
   box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  border-left: 5px solid #2575fc;
-  animation: aparecer 0.5s ease-out;
+  border-left: 5px solid #2575fc; /* Borde lateral de color para identificar que es la IA. */
+  animation: aparecer 0.5s ease-out; /* Aparece suavemente. */
   line-height: 1.6;
   color: #333;
 }
@@ -179,9 +194,9 @@ body, html {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Mensaje de error */
+/* Mensaje de Error */
 p:has(⚠️) {
-  color: #ff6b6b;
+  color: #ff6b6b; /* Rojo suave para alertas. */
   font-weight: bold;
   background: rgba(255, 0, 0, 0.1);
   padding: 10px;
