@@ -93,11 +93,19 @@ Buena pregunta. Para decir que la comida está muy rica puedes usar <strong>The 
     console.log("=== RESPUESTA COMPLETA DE GROQ ===");
     console.log(JSON.stringify(groqResponse.data, null, 2));
 
+const choice = groqResponse?.data?.choices?.[0];
+
+    console.log("=== CHOICE ===");
+    console.log(JSON.stringify(choice, null, 2));
+
     const replyText =
-      groqResponse?.data?.choices?.[0]?.message?.content || '';
+      choice?.message?.content ??
+      choice?.content ??
+      choice?.text ??
+      '';
 
     console.log("=== TEXTO EXTRAIDO ===");
-    console.log(replyText);
+    console.log(JSON.stringify(replyText));
 
     // --- INTEGRACIÓN CON SUPABASE ---
     const supabaseUrl = process.env.SUPABASE_URL;
