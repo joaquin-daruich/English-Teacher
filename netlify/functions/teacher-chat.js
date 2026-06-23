@@ -97,9 +97,9 @@ La respuesta debe ser natural, cálida, breve y fácil de escuchar en audio.
             { role: "system", content: systemPrompt },
             { role: "user", content: question }
           ],
-        temperature: 0.45,
-        top_p: 0.8,
-        max_tokens: 180,
+          temperature: 0.45,       // ✅ Corregido: número directo, sin comillas ni errores de sintaxis
+          top_p: 0.8,              // ✅ Alineado correctamente
+          max_tokens: 180,         // ✅ Límite estricto para evitar respuestas largas
           stream: false
         },
         {

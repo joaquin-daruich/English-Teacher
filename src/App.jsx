@@ -65,8 +65,9 @@ function App() {
       const dataText = await resText.json();
 
       // Validamos que realmente hayamos recibido una respuesta de texto en el objeto.
-      if (!dataText.reply) {
-        throw new Error("La profesora no respondió texto.");
+      if (!dataText.reply || !dataText.reply.trim()) {
+        console.error("Respuesta recibida:", dataText);
+        throw new Error("Teacher Lily devolvió una respuesta vacía.");
       }
 
       // Actualizamos el estado de respuesta para que el componente renderice el texto de la IA en pantalla.
