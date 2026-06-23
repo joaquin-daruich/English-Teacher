@@ -14,10 +14,12 @@
 }
 
 
+
+
 /* Estilo para la Imagen Principal (Teacher Lily) */
 .EnglishTeacher {
-  height: 100%;
-  max-width: 100%; /* Asegura que no exceda el ancho del contenedor (responsive). */
+  height: 77%;
+   aspect-ratio: 1 / 1;
   animation: respirar 11s ease-in-out infinite; /* Aplica la animación definida arriba: duración larga (11s), 
                                                   curva de velocidad suave (ease-in-out) y repetición infinita. */
 }

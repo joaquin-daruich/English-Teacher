@@ -258,6 +258,15 @@ function App() {
           >
             {cargando ? '⏳ Pensando...' : reproduciendo ? '🔊 Escuchando...' : 'Enviar'}
           </button>
+
+          {respuestaIA && (
+  <div className='respuestaTeacher'>
+    {/* CAMBIO: Usar dangerouslySetInnerHTML para interpretar <strong> como negrita */}
+    <strong>Teacher Lily dice:</strong><br/>
+    <span style={{ marginTop: '10px', display: 'block', lineHeight: '1.5' }} 
+          dangerouslySetInnerHTML={{ __html: respuestaIA }} />
+  </div>
+)}
         </form>
 
         {/* Mostrar mensaje de error si existe (condicional) */}
@@ -267,14 +276,7 @@ function App() {
           </p>
         )}
 
-{respuestaIA && (
-  <div className='respuestaTeacher'>
-    {/* CAMBIO: Usar dangerouslySetInnerHTML para interpretar <strong> como negrita */}
-    <strong>Teacher Lily dice:</strong><br/>
-    <span style={{ marginTop: '10px', display: 'block', lineHeight: '1.5' }} 
-          dangerouslySetInnerHTML={{ __html: respuestaIA }} />
-  </div>
-)}
+
 
         {/* Elemento de audio oculto (display: none en CSS) que maneja la reproducción */}
         <audio ref={audioRef} style={{ display: 'none' }} onEnded={handleAudioEnd} />
