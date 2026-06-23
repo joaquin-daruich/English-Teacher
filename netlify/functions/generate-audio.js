@@ -23,37 +23,31 @@ exports.handler = async (event, context) => {
   }
 
   // ==================================================================
-  // LIMPIEZA AGRESIVA PARA EVITAR LECTURA DE SÍMBOLOS
+  // LIMPIEZA SUPER AGRESIVA PARA AUDIO
   // ==================================================================
   let cleanText = text;
 
-  // 1. Eliminar TODAS las etiquetas HTML (<strong>, </strong>, etc.)
-  // Esto evita que la voz diga "etiqueta strong" o lea corchetes.
+  // 1. Eliminar TODAS las etiquetas HTML (<strong>, </strong>, <br>, etc.)
   cleanText = cleanText.replace(/<[^>]*>/g, ''); 
 
-  // 2. Eliminar TODOS los caracteres que NO sean:
-  //    - Letras (a-z, A-Z, acentos españoles áéíóúüñ)
-  //    - Números (0-9)
-  //    - Espacios, puntos, comas básicos
-  //    - Signos de interrogación/exclamación BÁSICOS si son necesarios, PERO mejor quitarlos para evitar lecturas raras.
-  //    NOTA: Vamos a QUITAR casi todos los signos para que sea lectura plana y segura.
-  cleanText = cleanText.replace(/[^\w\sáéíóúüñÁÉÍÓÚÜ., ]/g, '');
+  // 2. Eliminar caracteres especiales que Google lee mal
+  //    Eliminamos interrogaciones, exclamaciones, comillas, guiones raros, emojis
+  cleanText = cleanText.replace(/[¿?¡!'"–—…°®©™]/g, '');
 
-  // 3. Unir múltiples espacios en uno solo
+  // 3. Reemplazar múltiples espacios, tabulaciones y saltos de línea con UN solo espacio
   cleanText = cleanText.replace(/\s+/g, ' ');
 
-  // 4. Recortar al inicio y final
+  // 4. Recortar espacios extremos
   cleanText = cleanText.trim();
 
-  // Verificación post-limpieza
+  // Verificación final
   if (!cleanText || cleanText.length === 0) {
-     console.log('[Audio] Texto vacío tras limpieza agresiva.');
+     console.log('[Audio] Texto vacío tras limpieza.');
      return { statusCode: 200, body: JSON.stringify({ audioBase64: '' }) };
   }
 
-  // Limitar a 200 caracteres (Límite duro de Google TTS gratuito)
+  // Limitar a 200 caracteres
   if (cleanText.length > 200) {
-    // Cortar en la última palabra completa antes del límite
     const corte = cleanText.lastIndexOf(' ', 200);
     cleanText = cleanText.substring(0, corte !== -1 ? corte : 200) + '...';
     console.log(`[Audio] Texto recortado a ${cleanText.length} chars.`);
@@ -62,12 +56,11 @@ exports.handler = async (event, context) => {
   console.log(`[Audio] Procesando limpio: "${cleanText}"`);
 
   try {
-    const voiceLang = 'es-MX'; // Voz mexicana natural
+    const voiceLang = 'es-MX';
     const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(cleanText)}&tl=${voiceLang}&client=tw-ob`;
 
     console.log('[Audio] Llamando a Google TTS...');
     
-    // Usamos fetch NATIVO
     const response = await fetch(ttsUrl, { 
       method: 'GET',
       timeout: 10000
