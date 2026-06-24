@@ -48,7 +48,7 @@ function App() {
       const resText = await fetch('/.netlify/functions/teacher-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }, // Definimos que enviamos datos JSON.
-        body: JSON.stringify({ question: inputValue }), // Serializamos el objeto con la pregunta a formato JSON string.
+        body: JSON.stringify({ question: inputValue ,  saveLog: true}), // Serializamos el objeto con la pregunta a formato JSON string.
       });
 
       // Verificamos si la respuesta HTTP fue exitosa (status 200-299). Si no, capturamos el error del servidor.
@@ -103,7 +103,7 @@ function App() {
         const resExpresion = await fetch('/.netlify/functions/teacher-chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ question: promptExpresion }),
+          body: JSON.stringify({ question: promptExpresion,  saveLog: false }),
         });
 
         // Solo procesamos si la petición fue exitosa.

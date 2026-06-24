@@ -7,7 +7,7 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    const { question } = JSON.parse(event.body);
+    const { question , saveLog = true} = JSON.parse(event.body);
     
     if (!question || typeof question !== 'string') {
       return { statusCode: 400, body: JSON.stringify({ error: 'Falta la pregunta' }) };
@@ -112,7 +112,7 @@ const choice = groqResponse?.data?.choices?.[0];
     const supabaseUrl = process.env.SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_ANON_KEY;
 
-    if (supabaseUrl && supabaseKey) {
+    if (saveLog && supabaseUrl && supabaseKey) {
       let source = 'web_direct';
       const referer = event.headers.referer || '';
       if (referer.toLowerCase().includes('tiktok')) {
