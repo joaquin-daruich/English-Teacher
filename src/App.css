@@ -157,6 +157,8 @@ body, html {
 .respuestaTeacher {
   background: rgba(255, 255, 255, 0.95);
   border-radius: 15px;
+   padding: 15px;
+  
   box-shadow: 0 4px 15px rgba(0,0,0,0.2);
   border-left: 5px solid #2575fc; /* Borde lateral de color para identificar que es la IA. */
   animation: aparecer 0.5s ease-out; /* Aparece suavemente. */
