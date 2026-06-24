@@ -1,69 +1,114 @@
-# 📚 Teacher Lily — Tutora de inglés con IA
+# Teacher Lily
 
-Teacher Lily es una tutora virtual de inglés que habla en español con el usuario, responde con voz, cambia de expresión según la emoción de la conversación y guarda el historial para crear una experiencia más humana y cercana.
+Teacher Lily es una aplicación web impulsada por inteligencia artificial diseñada para ayudar a estudiantes hispanohablantes a practicar inglés de forma simple, rápida y sin la presión de hablar con otras personas.
 
-Este proyecto fue construido como **prototipo validable**: la idea es publicarlo en TikTok, observar cómo reaccionan los usuarios reales y, si tiene buena recepción, evolucionarlo hacia una versión más escalable y pulida, por ejemplo cambiando el sistema de TTS por una solución más natural y robusta.
+El proyecto fue concebido, diseñado, desarrollado y desplegado íntegramente por mí como una demostración de mis capacidades para construir productos digitales completos utilizando tecnologías modernas de frontend, backend e inteligencia artificial.
 
+# Objetivo del proyecto
 
+Teacher Lily fue desarrollado como un proyecto personal con el objetivo de poner a prueba mis capacidades técnicas construyendo una aplicación completa de principio a fin.
 
----
+El desafío consistió en diseñar una experiencia funcional para usuarios reales integrando múltiples tecnologías dentro de un mismo producto: frontend, backend, inteligencia artificial, generación de audio, almacenamiento en base de datos, generación de imágenes y despliegue en la nube.
 
-## ✨ Descripción del proyecto
+Además del desarrollo de la aplicación, el proyecto también incluyó la creación de recursos audiovisuales para redes sociales, permitiéndome experimentar con automatización, edición de video y procesos de lanzamiento de un producto digital.
 
-Teacher Lily busca hacer que practicar inglés se sienta menos rígido y más conversacional. La interfaz permite chatear con una profesora virtual que responde en texto y voz, acompañada por expresiones visuales coherentes con el tono de la conversación.
+Más allá de la temática de aprendizaje de idiomas, el objetivo principal fue demostrar la capacidad de transformar una idea en una aplicación funcional, desplegada y preparada para recibir usuarios reales.
 
-La propuesta combina:
-- conversación con IA,
-- salida de voz,
-- historial persistente,
-- y assets visuales personalizados creados localmente.
+## Tecnologías utilizadas
 
-Además, el proyecto fue pensado como una pieza atractiva para redes sociales, especialmente TikTok, para validar interés, observar engagement y decidir qué mejoras vale la pena construir después.
+### Frontend
 
----
+* React
+* Vite
+* CSS personalizado
+* Gestión de estados y renderizado dinámico
 
-## 🛠️ Tecnologías usadas
+La interfaz fue diseñada y desarrollada desde cero con foco en simplicidad, velocidad y experiencia de usuario.
 
-- **Frontend:** React, Vite, CSS
-- **Backend:** Netlify Functions (Node.js)
-- **IA principal:** Groq API (openai/gpt-oss-120b)
-- **Texto a voz:** Google Translate TTS (`es-MX`)
-- **Base de datos:** Supabase (`chat_logs`)
-- **Imágenes:** ComfyUI + CyberRealistic XL
-- **Eliminación de fondo:** rembg
-- **Despliegue:** Netlify
+### Backend
 
----
+* Netlify Functions
+* Node.js
+* Integración de APIs externas
 
-## 🚀 Funcionalidades principales
+### Inteligencia Artificial
 
-- Chat interactivo para practicar inglés
-- Respuestas en español e inglés según el contexto
-- Voz generada automáticamente desde el texto
-- Expresiones visuales del personaje según la emoción
-- Historial de conversaciones guardado en Supabase
-- Interfaz responsive con animaciones y estilo visual moderno
-- Backend serverless para mantener el frontend ligero
-- Pipeline local de imágenes personalizadas para el personaje
-- Prototipo pensado para validación en TikTok y feedback real de usuarios
+* Groq Cloud
+* Modelo openai/gpt-oss-120b
+* Ingeniería de prompts personalizada para enseñanza de idiomas
 
----
+### Base de Datos
 
-## 🧠 ¿Cómo funciona?
+* Supabase
+* Registro y almacenamiento de conversaciones para análisis futuro
 
-1. El usuario escribe un mensaje desde el frontend en React.
-2. La app envía la petición a una Netlify Function.
-3. La función consulta a Groq para generar la respuesta.
-4. La respuesta vuelve al frontend.
-5. En paralelo, el chat se guarda en Supabase sin bloquear la experiencia.
-6. Si corresponde, otra función convierte el texto en audio.
-7. La interfaz actualiza la expresión del personaje y reproduce la voz.
+### Audio
 
-Este flujo permite separar la lógica sensible del frontend, mantener la app rápida y hacer más fácil escalar componentes en el futuro.
+* Google Text To Speech (TTS)
 
----
+### Generación de Imágenes
 
+* ComfyUI
+* Modelos generativos ejecutados localmente
+* Sistema de expresiones dinámicas basado en el contexto emocional de la conversación
 
+## Funcionalidades implementadas
 
+* Chat conversacional con IA.
+* Explicaciones de inglés adaptadas para hispanohablantes.
+* Formato visual optimizado para aprendizaje.
+* Reproducción automática de voz.
+* Cambio dinámico de expresiones faciales según el contenido de la respuesta.
+* Persistencia de conversaciones en base de datos.
+* Aplicación desplegada y accesible desde navegador.
 
+## Automatización y Producción de Contenido
 
+Además del desarrollo de la aplicación, se implementaron herramientas auxiliares para la generación de contenido promocional.
+
+Dentro del proyecto pueden encontrarse ejemplos de automatización utilizando:
+
+* Python
+* Playwright
+* FFmpeg
+* OBS Studio
+
+Estas herramientas fueron utilizadas para producir material audiovisual destinado a campañas de lanzamiento y difusión en redes sociales.
+
+## Desafíos Técnicos Resueltos
+
+Durante el desarrollo se trabajó sobre:
+
+* Integración de modelos de lenguaje de gran escala.
+* Procesamiento de texto para síntesis de voz.
+* Manejo de estados complejos en React.
+* Comunicación entre frontend, backend y servicios externos.
+* Persistencia de datos en la nube.
+* Generación dinámica de contenido visual.
+* Despliegue completo de una aplicación funcional.
+
+## Lo que demuestra este proyecto
+
+Este proyecto refleja mi capacidad para:
+
+* Transformar una idea en un producto funcional.
+* Diseñar interfaces modernas con React.
+* Integrar servicios de inteligencia artificial.
+* Crear experiencias orientadas al usuario.
+* Aprender y aplicar nuevas tecnologías rápidamente.
+* Automatizar tareas mediante programación.
+* Desarrollar soluciones completas desde la concepción hasta el despliegue.
+
+## Estado
+
+Proyecto funcional desplegado y listo para recibir usuarios reales.
+
+## Demostraciones y Proyectos
+
+El video de demostración de Teacher Lily, junto con otros proyectos y experimentos personales, puede encontrarse en mi perfil de TikTok:
+
+TikTok: @saintbetoautomatizacion
+
+https://www.tiktok.com/@saintbetoautomatizacion
+
+Este perfil funciona como un espacio donde documento proyectos, pruebas de concepto, automatizaciones y desarrollos realizados utilizando tecnologías web, inteligencia artificial y herramientas de automatización.

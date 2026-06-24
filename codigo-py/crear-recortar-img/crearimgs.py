@@ -1,13 +1,65 @@
+
+
 """
 ====================================================================
- SAINT BETO - Selector de Expresiones (3 Seeds Cada Una)
- CyberRealistic XL - Prompts Originales Exactos
+ TEACHER LILY - GENERADOR DE EXPRESIONES FACIALES
 ====================================================================
-OBJETIVO:
-  Generar 3 variaciones por cada expresión (total 15 imágenes).
-  Para seleccionar la que más se parece a teacher-saludando.png.
 
+OBJETIVO
+--------
+Generar múltiples expresiones faciales de la profesora virtual
+manteniendo la misma identidad visual del personaje.
 
+PROBLEMA QUE RESUELVE
+---------------------
+Los modelos generativos suelen cambiar rasgos faciales, ropa,
+peinado o fondo entre imágenes.
+
+Para evitarlo, este script:
+
+1. Define una identidad base única.
+2. Mantiene constantes:
+   - rostro
+   - ropa
+   - peinado
+   - entorno
+3. Solo modifica la emoción del personaje.
+
+EXPRESIONES GENERADAS
+---------------------
+- Saludando
+- Alegre
+- Consoladora
+- Triste
+- Dudando
+
+ESTRATEGIA UTILIZADA
+--------------------
+Se utiliza una seed principal que define la identidad visual
+del personaje.
+
+Posteriormente se generan pequeñas variaciones de esa seed
+para obtener distintas opciones de manos, poses y gestos
+sin perder consistencia visual.
+
+PIPELINE
+--------
+Python
+    ↓
+ComfyUI API
+    ↓
+CyberRealistic XL
+    ↓
+Generación de imágenes
+    ↓
+Descarga automática
+    ↓
+Clasificación por emoción
+
+RESULTADO
+----------
+15 imágenes generadas automáticamente listas para selección
+manual y posterior integración en React.
 """
 
 import json

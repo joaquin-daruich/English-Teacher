@@ -1,13 +1,48 @@
 """
 ====================================================================
- SAINT BETO - Quitar fondo de las imagenes de la maestra (rembg)
+ TEACHER LILY - ELIMINADOR DE FONDOS
 ====================================================================
 
-QUE HACE:
-  Le saca el fondo a todas las imagenes de una carpeta y las guarda
-  como PNG transparente. Asi la maestra queda "recortada" y en la web
-  respira sola, sin arrastrar el fondo.
+OBJETIVO
+--------
+Convertir las imágenes generadas por IA en PNG transparentes
+listos para utilizar dentro de la interfaz web.
 
+PROBLEMA QUE RESUELVE
+---------------------
+Las imágenes generadas por Stable Diffusion incluyen fondos
+completos que dificultan su integración visual dentro del
+frontend.
+
+SOLUCIÓN
+--------
+Se utiliza rembg para detectar automáticamente la silueta
+del personaje y eliminar el fondo.
+
+PIPELINE
+--------
+Imagen generada
+    ↓
+Rembg
+    ↓
+Detección de sujeto
+    ↓
+Eliminación de fondo
+    ↓
+PNG transparente
+
+FUNCIONALIDAD EXTRA
+-------------------
+Además de eliminar el fondo, el script renombra
+automáticamente los archivos según la emoción detectada:
+
+- Teacher-alegre.png
+- Teacher-triste.png
+- Teacher-consoladora.png
+- Teacher-dudando.png
+
+Esto permite que React cambie dinámicamente la imagen
+simplemente modificando la ruta del archivo.
 """
 
 import os             # Para listar archivos y crear carpetas

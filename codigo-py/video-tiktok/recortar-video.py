@@ -1,4 +1,67 @@
-#!/usr/bin/env python3
+"""
+====================================================================
+ TEACHER LILY - GENERADOR AUTOMÁTICO DE VIDEO TIKTOK
+====================================================================
+
+OBJETIVO
+--------
+Automatizar la creación del video promocional utilizado para
+el lanzamiento del proyecto.
+
+PROBLEMA QUE RESUELVE
+---------------------
+Los editores tradicionales requieren múltiples pasos manuales:
+
+- Recortar clips
+- Unir escenas
+- Acelerar el video
+- Diseñar llamados a la acción
+- Exportar formatos verticales
+
+Este script automatiza todo el proceso.
+
+TECNOLOGÍAS UTILIZADAS
+----------------------
+- Python
+- HTML
+- CSS
+- Playwright
+- FFmpeg
+
+PIPELINE
+--------
+HTML/CSS
+    ↓
+Playwright
+    ↓
+PNG transparente CTA
+    ↓
+FFmpeg
+    ↓
+Recorte de escenas
+    ↓
+Unión de clips
+    ↓
+Aceleración 1.5x
+    ↓
+Overlay promocional
+    ↓
+Video final para TikTok
+
+FUNCIONALIDADES
+---------------
+- Selección automática de segmentos relevantes.
+- Unión automática de clips.
+- Aceleración del contenido.
+- Generación visual de CTA mediante HTML y CSS.
+- Renderizado automático mediante Chromium.
+- Integración final mediante FFmpeg.
+
+RESULTADO
+---------
+Video vertical listo para publicar en TikTok sin necesidad
+de edición manual posterior.
+"""
 
 import subprocess
 from pathlib import Path
